@@ -8,7 +8,7 @@ export class GameEngine {
         // 地图尺寸
         this.width = 600;
         this.height = 600;
-        
+
         // 玩家状态
         this.player = {
             x: 300,
@@ -19,7 +19,7 @@ export class GameEngine {
             rotationSpeed: 0.035, // 旋转速度 (弧度/帧)
             distanceWalked: 0 // 累计行走距离 (米)
         };
-        
+
         // 目标电台 (Fox) 状态
         this.fox = {
             x: 0,
@@ -27,14 +27,14 @@ export class GameEngine {
             id: 'MO',
             isFound: false
         };
-        
+
         // 哑点线数组
         this.nullLines = []; // 元素结构: { x, y, angle }
-        
+
         // 玩家行走轨迹记录 (每隔几帧采样一次)
         this.trail = [];
         this.trailSampleCounter = 0;
-        
+
         // 障碍物定义 (圆形，便于做平滑的滑动碰撞检测)
         this.obstacles = [
             { name: '中心大池塘', x: 220, y: 260, r: 65, type: 'pond' },
@@ -43,7 +43,7 @@ export class GameEngine {
             { name: '西北古树区', x: 120, y: 100, r: 40, type: 'forest' },
             { name: '东南休息亭', x: 460, y: 420, r: 30, type: 'structure' }
         ];
-        
+
         // 游戏全局状态
         this.isVictory = false;
         this.startTime = 0;
@@ -60,31 +60,31 @@ export class GameEngine {
         this.player.y = 520;
         this.player.angle = 0; // 面向北方
         this.player.distanceWalked = 0;
-        
+
         // 2. 清空标记与轨迹
         this.nullLines = [];
         this.trail = [{ x: this.player.x, y: this.player.y }];
         this.trailSampleCounter = 0;
-        
+
         // 3. 随机选择一个电台作为隐藏目标
         const randomStation = availableStations[Math.floor(Math.random() * availableStations.length)];
         this.fox.id = randomStation.id;
         this.fox.isFound = false;
-        
+
         // 4. 随机在地图上放置电台（避开起点和障碍物）
         let validPos = false;
         let attempt = 0;
-        
+
         while (!validPos && attempt < 100) {
             attempt++;
             // 边缘留出 50 像素安全距离
             const rx = 50 + Math.random() * (this.width - 100);
             const ry = 50 + Math.random() * (this.height - 180); // 尽量放偏中上方，避开下方起点
-            
+
             // 检查是否与玩家起点过近 (至少相距 200 像素)
             const distToStart = Math.sqrt(Math.pow(rx - this.player.x, 2) + Math.pow(ry - this.player.y, 2));
             if (distToStart < 200) continue;
-            
+
             // 检查是否在任何障碍物内
             let insideObstacle = false;
             for (const obs of this.obstacles) {
@@ -94,20 +94,20 @@ export class GameEngine {
                     break;
                 }
             }
-            
+
             if (!insideObstacle) {
                 this.fox.x = Math.round(rx);
                 this.fox.y = Math.round(ry);
                 validPos = true;
             }
         }
-        
+
         // 如果极罕见情况下找不到位置，给个保底坐标
         if (!validPos) {
             this.fox.x = 300;
             this.fox.y = 150;
         }
-        
+
         this.isVictory = false;
         this.startTime = Date.now();
         this.gameTime = 0;
@@ -122,10 +122,10 @@ export class GameEngine {
             this.gameTime = Math.round((Date.now() - this.startTime) / 1000);
             return;
         }
-        
+
         // 1. 更新游戏计时
         this.gameTime = Math.round((Date.now() - this.startTime) / 1000);
-        
+
         // 2. 旋转逻辑 (左右键)
         if (keys.left) {
             this.player.angle -= this.player.rotationSpeed;
@@ -133,14 +133,14 @@ export class GameEngine {
         if (keys.right) {
             this.player.angle += this.player.rotationSpeed;
         }
-        
+
         // 规范化角度到 [-PI, PI] 之间
         this.player.angle = Math.atan2(Math.sin(this.player.angle), Math.cos(this.player.angle));
-        
+
         // 3. 移动逻辑 (上下键)
         let dx = 0;
         let dy = 0;
-        
+
         if (keys.forward) {
             // 面向 0 度(北) 时，sin=0, cos=1, 坐标 y 应该减小
             dx = Math.sin(this.player.angle) * this.player.speed;
@@ -150,28 +150,28 @@ export class GameEngine {
             dx = -Math.sin(this.player.angle) * this.player.speed * 0.6; // 后退速度稍慢
             dy = Math.cos(this.player.angle) * this.player.speed * 0.6;
         }
-        
+
         if (dx !== 0 || dy !== 0) {
             const nextX = this.player.x + dx;
             const nextY = this.player.y + dy;
-            
+
             // 4. 碰撞处理 - 精美的滑动碰撞检测与解决
             let newX = nextX;
             let newY = nextY;
-            
+
             // 边缘检测限制
             if (newX < this.player.radius) newX = this.player.radius;
             if (newX > this.width - this.player.radius) newX = this.width - this.player.radius;
             if (newY < this.player.radius) newY = this.player.radius;
             if (newY > this.height - this.player.radius) newY = this.height - this.player.radius;
-            
+
             // 障碍物碰撞检测
             for (const obs of this.obstacles) {
                 const distVectorX = newX - obs.x;
                 const distVectorY = newY - obs.y;
                 const distance = Math.sqrt(distVectorX * distVectorX + distVectorY * distVectorY);
                 const minDist = obs.r + this.player.radius;
-                
+
                 if (distance < minDist) {
                     // 发生碰撞，沿障碍物法向外推，实现平滑滑行
                     if (distance > 0) {
@@ -183,32 +183,32 @@ export class GameEngine {
                     }
                 }
             }
-            
+
             // 计算本帧实际位移
             const actualMoveDist = Math.sqrt(
                 Math.pow(newX - this.player.x, 2) + Math.pow(newY - this.player.y, 2)
             );
-            
+
             // 80米测向1个像素约合现实 0.5 米
             this.player.distanceWalked += actualMoveDist * 0.5;
-            
+
             // 应用最终新坐标
             this.player.x = newX;
             this.player.y = newY;
-            
+
             // 5. 行动轨迹记录
             this.trailSampleCounter++;
             if (this.trailSampleCounter >= 10) { // 每 10 帧采样一个轨迹点
                 this.trail.push({ x: this.player.x, y: this.player.y });
                 this.trailSampleCounter = 0;
-                
+
                 // 限制最大历史长度，保证 Canvas 渲染性能
                 if (this.trail.length > 600) {
                     this.trail.shift();
                 }
             }
         }
-        
+
         // 6. 胜利条件判定 (距离小于 18 像素算找到电台，即玩家重合到天线上)
         const distToFox = Math.sqrt(Math.pow(this.player.x - this.fox.x, 2) + Math.pow(this.player.y - this.fox.y, 2));
         if (distToFox < 18) {
@@ -223,12 +223,12 @@ export class GameEngine {
      */
     addNullLine() {
         if (this.isVictory) return;
-        
-        // 保存当前玩家位置和角度
+
+        // 保存当前玩家位置和角度，旋转90度使其垂直于玩家朝向
         this.nullLines.push({
             x: this.player.x,
             y: this.player.y,
-            angle: this.player.angle
+            angle: this.player.angle + Math.PI / 2
         });
     }
 
