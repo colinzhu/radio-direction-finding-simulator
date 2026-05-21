@@ -1,0 +1,790 @@
+/* ==========================================================================
+   80米无线电测向模拟器 - 全局样式与变量定义
+   ========================================================================== */
+
+:root {
+    --bg-primary: #0a0c14;
+    --bg-secondary: #121524;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --panel-bg: rgba(18, 21, 36, 0.65);
+    
+    /* 品牌色彩系统 - HSL 柔和与发光配色 */
+    --color-neon-blue: #00f0ff;
+    --color-neon-green: #39ff14;
+    --color-neon-orange: #ff9f00;
+    --color-neon-danger: #ff3366;
+    
+    --text-primary: #f0f3fa;
+    --text-secondary: #8c9ba5;
+    --text-muted: #576574;
+    
+    --font-sans: 'Noto Sans SC', 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'Share Tech Mono', 'Courier New', Courier, monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-primary);
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(20, 30, 80, 0.4) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(10, 45, 45, 0.3) 0px, transparent 50%);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   布局结构
+   ========================================================================== */
+
+.app-container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 头部样式 */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-icon {
+    font-size: 2.2rem;
+    filter: drop-shadow(0 0 10px var(--color-neon-blue));
+}
+
+.logo-text h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #ffffff, var(--color-neon-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.logo-text p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.header-status {
+    display: flex;
+    align-items: center;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--text-muted);
+    transition: background-color 0.3s;
+}
+
+.status-dot.green {
+    background-color: var(--color-neon-green);
+    box-shadow: 0 0 8px var(--color-neon-green);
+}
+
+.status-dot.orange {
+    background-color: var(--color-neon-orange);
+    box-shadow: 0 0 8px var(--color-neon-orange);
+}
+
+.text-neon-green {
+    color: var(--color-neon-green);
+    font-weight: bold;
+}
+
+/* 主面板双栏布局 */
+.main-dashboard {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 1024px) {
+    .main-dashboard {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 玻璃拟态面板 */
+.panel-glass {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-section-title {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.panel-section-title h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ==========================================================================
+   左栏：接收机控制面板样式
+   ========================================================================== */
+
+/* S分贝表仪表 */
+.s-meter-container {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.s-meter-gauge {
+    position: relative;
+    width: 240px;
+    height: 120px;
+    border-bottom: 2px solid var(--text-secondary);
+    overflow: hidden;
+}
+
+.gauge-scale {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    right: 20px;
+    height: 90px;
+}
+
+.scale-mark {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    height: 100px;
+    background: linear-gradient(to top, transparent 80%, rgba(255, 255, 255, 0.5) 80%);
+    transform-origin: bottom center;
+    margin-left: -1px;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    text-align: center;
+    padding-top: 4px;
+}
+
+.scale-mark.text-danger {
+    color: var(--color-neon-danger);
+    background: linear-gradient(to top, transparent 80%, var(--color-neon-danger) 80%);
+}
+
+.gauge-label-dbm {
+    position: absolute;
+    bottom: 25px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    letter-spacing: 2px;
+}
+
+.gauge-needle {
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    width: 2px;
+    height: 95px;
+    background: linear-gradient(to top, var(--color-neon-orange) 80%, transparent 100%);
+    transform-origin: bottom center;
+    transform: rotate(-60deg); /* 范围 -60deg (最小) 至 +60deg (最大) */
+    transition: transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 0 6px var(--color-neon-orange);
+    z-index: 2;
+}
+
+.gauge-center {
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #24293e;
+    border: 3px solid var(--text-secondary);
+    margin-left: -15px;
+    z-index: 3;
+}
+
+.s-meter-digital {
+    margin-top: 12px;
+    text-align: center;
+}
+
+.digital-display {
+    font-family: var(--font-mono);
+    font-size: 1.3rem;
+    color: var(--color-neon-orange);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 4px 16px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    text-shadow: 0 0 10px rgba(255, 160, 0, 0.4);
+    min-width: 180px;
+}
+
+.digital-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* 状态度盘信息 */
+.telemetry-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.tel-item {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.tel-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.tel-val {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.text-neon-orange {
+    color: var(--color-neon-orange);
+}
+
+.text-neon-blue {
+    color: var(--color-neon-blue);
+}
+
+/* 旋钮调谐区 */
+.knob-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 15px 10px;
+    margin-bottom: 20px;
+}
+
+.control-knob-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 45%;
+}
+
+.knob-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* 电源拨档开关按钮 */
+.power-switch-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid #1c2236;
+    background: radial-gradient(circle, #2d3550 0%, #151a2b 100%);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+}
+
+.power-switch-btn:active {
+    transform: scale(0.95);
+}
+
+.power-switch-btn.on {
+    border-color: var(--color-neon-green);
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.25), inset 0 0 8px rgba(57, 255, 20, 0.2);
+}
+
+.switch-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #555;
+    margin-bottom: 4px;
+}
+
+.power-switch-btn.on .switch-indicator {
+    background-color: var(--color-neon-green);
+    box-shadow: 0 0 8px var(--color-neon-green);
+}
+
+.switch-text {
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+}
+
+.power-switch-btn.on .switch-text {
+    color: var(--color-neon-green);
+    font-weight: bold;
+}
+
+/* 旋转旋钮 CSS */
+.knob-container {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, #2d3550 0%, #151a2b 100%);
+    border: 3px solid #1c2236;
+    border-radius: 50%;
+    cursor: grab;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    touch-action: none;
+}
+
+.knob-container:active {
+    cursor: grabbing;
+}
+
+.rotatable-knob {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    transition: transform 0.05s ease-out; /* 微弱顺滑感 */
+}
+
+.knob-dot {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--color-neon-blue);
+    transform: translateX(-50%);
+    box-shadow: 0 0 6px var(--color-neon-blue);
+}
+
+.knob-value {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
+
+/* 按钮及按键 */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    border: none;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 114, 255, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #00d2ff, #0082ff);
+    box-shadow: 0 6px 20px rgba(0, 114, 255, 0.45);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    color: white;
+}
+
+.btn-danger:hover {
+    box-shadow: 0 0 12px rgba(255, 75, 43, 0.4);
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+/* 调试控制区 */
+.debug-controls {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 75, 43, 0.1);
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: auto;
+}
+
+.debug-title {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: var(--color-neon-danger);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.debug-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 26px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    user-select: none;
+    color: var(--text-secondary);
+}
+
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 1px;
+    left: 0;
+    height: 16px;
+    width: 16px;
+    background-color: #1a2035;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 4px;
+}
+
+.checkbox-container:hover input ~ .checkmark {
+    background-color: #242c4c;
+}
+
+.checkbox-container input:checked ~ .checkmark {
+    background-color: var(--color-neon-blue);
+    border-color: var(--color-neon-blue);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.checkbox-container .checkmark:after {
+    left: 5px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.debug-info {
+    margin-top: 10px;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 10px;
+    color: var(--text-secondary);
+}
+
+.debug-info p {
+    margin: 0;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   右栏：地图显示区样式
+   ========================================================================== */
+
+.map-panel {
+    flex: 1;
+}
+
+.kbd-tip {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.canvas-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #0f111a;
+    border: 2px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: crosshair;
+}
+
+/* 游戏胜利浮层 overlay */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(6, 8, 18, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.4s ease-out;
+}
+
+.overlay-content {
+    background: linear-gradient(135deg, #15203b 0%, #0d1222 100%);
+    border: 2px solid var(--color-neon-blue);
+    border-radius: 16px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+    max-width: 450px;
+    animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.victory-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 15px var(--color-neon-orange));
+    animation: pulse 1.5s infinite alternate;
+}
+
+.overlay-content h2 {
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+    color: var(--color-neon-blue);
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+}
+
+.overlay-content p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+}
+
+/* ==========================================================================
+   底部：科普部分样式
+   ========================================================================== */
+
+.app-instructions {
+    margin-top: 10px;
+}
+
+.app-instructions h3 {
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+    border-left: 4px solid var(--color-neon-blue);
+    padding-left: 10px;
+}
+
+.instruction-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+@media (max-width: 768px) {
+    .instruction-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+@media (max-width: 480px) {
+    .instruction-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ins-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.ins-number {
+    position: absolute;
+    top: -10px;
+    right: -5px;
+    font-size: 3.5rem;
+    font-family: var(--font-mono);
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.02);
+    line-height: 1;
+}
+
+.ins-card h4 {
+    color: var(--color-neon-blue);
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.ins-card p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: justify;
+}
+
+/* ==========================================================================
+   动画定义
+   ========================================================================== */
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+}
