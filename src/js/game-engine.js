@@ -14,7 +14,7 @@ export class GameEngine {
             x: 375,
             y: 625,
             angle: 0, // 朝向角 (弧度, 0为正北, 顺时针为正值)
-            radius: 8,
+            radius: 16,
             speed: 2.2, // 基础移动速度
             rotationSpeed: 0.035, // 旋转速度 (弧度/帧)
             distanceWalked: 0 // 累计行走距离 (米)
