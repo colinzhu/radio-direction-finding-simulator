@@ -51,9 +51,12 @@ export class UIController {
             
             victoryOverlay: document.getElementById('victory-overlay'),
             victoryDetails: document.getElementById('victory-details'),
-            nextGameBtn: document.getElementById('next-game-btn')
+            nextGameBtn: document.getElementById('next-game-btn'),
+            closeVictoryBtn: document.getElementById('close-victory-btn')
         };
         
+        this.victoryClosed = false;
+
         // 初始化绑定
         this.initEvents();
     }
@@ -77,6 +80,7 @@ export class UIController {
         this.dom.clearNullBtn.addEventListener('click', () => this.clearNullLines());
         this.dom.resetGameBtn.addEventListener('click', () => this.resetGame());
         this.dom.nextGameBtn.addEventListener('click', () => this.resetGame());
+        this.dom.closeVictoryBtn.addEventListener('click', () => this.closeVictory());
         
         // 4. 调试选项
         this.dom.showFoxCheckbox.addEventListener('change', (e) => {
@@ -275,6 +279,7 @@ export class UIController {
     resetGame() {
         this.game.resetGame(this.audio.stations);
         this.audio.setActiveStation(this.game.fox.id); // 同步声音模块的目标电台ID
+        this.victoryClosed = false;
         this.dom.nullLineCount.textContent = 0;
         this.dom.victoryOverlay.classList.add('hidden');
         
@@ -287,6 +292,14 @@ export class UIController {
             this.audio.stop();
             this.audio.start();
         }
+    }
+
+    /**
+     * 关闭胜利弹窗，查看地图痕迹和电台位置
+     */
+    closeVictory() {
+        this.victoryClosed = true;
+        this.dom.victoryOverlay.classList.add('hidden');
     }
 
     /**
@@ -364,7 +377,7 @@ export class UIController {
         }
         
         // 4. 胜利弹窗
-        if (this.game.isVictory && this.dom.victoryOverlay.classList.contains('hidden')) {
+        if (this.game.isVictory && !this.victoryClosed && this.dom.victoryOverlay.classList.contains('hidden')) {
             this.dom.victoryOverlay.classList.remove('hidden');
             this.dom.victoryDetails.textContent = `你共画了 ${this.game.nullLines.length} 条哑点线，探索行走约 ${Math.round(this.game.player.distanceWalked)} 米，耗时 ${this.game.gameTime} 秒。`;
             this.audio.stop();
