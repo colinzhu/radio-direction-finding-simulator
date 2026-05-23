@@ -266,24 +266,24 @@ export class AudioEngine {
         const dist = Math.sqrt(dx * dx + dy * dy);
         
         // 1. 距离衰减 (D0越小衰减越明显)
-        const D0 = 30;
+        const D0 = 15;
         const distGain = D0 / (D0 + dist);
-        
+
         // 2. 方向图衰减 (8字形，哑点线在身体垂直方向)
         const angleToFox = Math.atan2(dy, dx);
         let relativeAngle = angleToFox - playerAngle;
         relativeAngle = Math.atan2(Math.sin(relativeAngle), Math.cos(relativeAngle));
-        
+
         const dirGain = Math.abs(Math.cos(relativeAngle));
-        
+
         // 综合增益
         const finalSignalGain = distGain * dirGain;
-        
+
         // 控制信号音量
-        this.signalGain.gain.setTargetAtTime(finalSignalGain * 0.85, this.ctx.currentTime, 0.02);
+        this.signalGain.gain.setTargetAtTime(finalSignalGain * 1.5, this.ctx.currentTime, 0.02);
         
         // 噪音与距离成正比：越远噪音越大
-        const noiseLevel = 0.015 + (dist / this.mapDiagonal) * 0.10;
+        const noiseLevel = 0.015 + (dist / this.mapDiagonal) * 0.05;
         this.noiseGain.gain.setTargetAtTime(noiseLevel, this.ctx.currentTime, 0.05);
         
         // 信号强度分度 (0 - 100)
