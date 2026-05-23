@@ -35,19 +35,65 @@ export class GameEngine {
         this.trail = [];
         this.trailSampleCounter = 0;
 
-        // 障碍物定义 (圆形，便于做平滑的滑动碰撞检测)
-        this.obstacles = [
-            { name: '中心大池塘', x: 275, y: 325, r: 81, type: 'pond' },
-            { name: '东北密林区', x: 563, y: 225, r: 69, type: 'forest' },
-            { name: '西南小石群', x: 188, y: 550, r: 44, type: 'rock' },
-            { name: '西北古树区', x: 150, y: 125, r: 50, type: 'forest' },
-            { name: '东南休息亭', x: 575, y: 525, r: 38, type: 'structure' }
+        // 障碍物模板 (每次游戏随机放置)
+        this.obstacleTemplates = [
+            { name: '中心大池塘', minR: 65, maxR: 90, type: 'pond' },
+            { name: '密林区A',    minR: 50, maxR: 75, type: 'forest' },
+            { name: '小石群',     minR: 30, maxR: 50, type: 'rock' },
+            { name: '密林区B',    minR: 35, maxR: 55, type: 'forest' },
+            { name: '休息亭',     minR: 28, maxR: 42, type: 'structure' }
         ];
+
+        // 障碍物实例 (圆形，便于做平滑的滑动碰撞检测)
+        this.obstacles = [];
 
         // 游戏全局状态
         this.isVictory = false;
         this.startTime = 0;
         this.gameTime = 0; // 游戏持续时间 (秒)
+    }
+
+    /**
+     * 随机生成障碍物布局，保证分散不重叠
+     */
+    generateObstacles(playerX, playerY) {
+        this.obstacles = [];
+        const margin = 60;
+        const minCenterDist = 160; // 障碍物中心最小间距
+
+        for (const tpl of this.obstacleTemplates) {
+            let placed = false;
+            for (let attempt = 0; attempt < 200; attempt++) {
+                const r = tpl.minR + Math.random() * (tpl.maxR - tpl.minR);
+                const x = margin + Math.random() * (this.width - margin * 2);
+                const y = margin + Math.random() * (this.height - margin * 2);
+
+                // 远离玩家起点
+                const distToPlayer = Math.sqrt((x - playerX) ** 2 + (y - playerY) ** 2);
+                if (distToPlayer < 180) continue;
+
+                // 与其他障碍物保持间距
+                let tooClose = false;
+                for (const obs of this.obstacles) {
+                    const d = Math.sqrt((x - obs.x) ** 2 + (y - obs.y) ** 2);
+                    if (d < minCenterDist) {
+                        tooClose = true;
+                        break;
+                    }
+                }
+                if (tooClose) continue;
+
+                this.obstacles.push({ name: tpl.name, x: Math.round(x), y: Math.round(y), r: Math.round(r), type: tpl.type });
+                placed = true;
+                break;
+            }
+
+            // 保底：找不到位置时放在左上角
+            if (!placed) {
+                const r = tpl.minR + (tpl.maxR - tpl.minR) / 2;
+                this.obstacles.push({ name: tpl.name, x: margin + this.obstacles.length * 100, y: margin, r: Math.round(r), type: tpl.type });
+            }
+        }
     }
 
     /**
@@ -61,17 +107,20 @@ export class GameEngine {
         this.player.angle = 0; // 面向北方
         this.player.distanceWalked = 0;
 
-        // 2. 清空标记与轨迹
+        // 2. 随机生成障碍物布局
+        this.generateObstacles(this.player.x, this.player.y);
+
+        // 3. 清空标记与轨迹
         this.nullLines = [];
         this.trail = [{ x: this.player.x, y: this.player.y }];
         this.trailSampleCounter = 0;
 
-        // 3. 随机选择一个电台作为隐藏目标
+        // 4. 随机选择一个电台作为隐藏目标
         const randomStation = availableStations[Math.floor(Math.random() * availableStations.length)];
         this.fox.id = randomStation.id;
         this.fox.isFound = false;
 
-        // 4. 随机在地图上放置电台（避开起点和障碍物）
+        // 5. 随机在地图上放置电台（避开起点和障碍物）
         let validPos = false;
         let attempt = 0;
 
