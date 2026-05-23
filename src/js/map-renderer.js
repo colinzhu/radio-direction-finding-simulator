@@ -297,8 +297,11 @@ export class MapRenderer {
         this.ctx.fill();
         
         // 3. 关键科普标识：绘制磁棒天线 (Ferrite Rod Antenna)
-        // 磁棒沿身体前方-后方 Y 轴方向分布
+        // 天线位于玩家身体前方，模拟手持天线在身前
         // 使用暗灰色配铜黄色线圈来示意磁棒天线
+        this.ctx.save();
+        this.ctx.translate(0, -22); // 将天线平移到身体前方
+
         this.ctx.strokeStyle = '#576574'; // 磁棒本身
         this.ctx.lineWidth = 4;
         this.ctx.lineCap = 'square';
@@ -322,6 +325,8 @@ export class MapRenderer {
         this.ctx.moveTo(0, 2);
         this.ctx.lineTo(0, 10);
         this.ctx.stroke();
+
+        this.ctx.restore();
         
         // 4. 辅助指示线：向身体正前方及正后方延伸的虚线，表示最强灵敏方向
         this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
