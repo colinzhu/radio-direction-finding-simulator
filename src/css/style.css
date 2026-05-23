@@ -444,9 +444,17 @@ body {
 }
 
 .knob-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     font-family: var(--font-mono);
-    font-size: 0.8rem;
-    margin-top: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: var(--color-neon-blue);
+    text-shadow: 0 0 6px rgba(0, 240, 255, 0.4);
+    z-index: 2;
+    pointer-events: none;
 }
 
 /* 按钮及按键 */
