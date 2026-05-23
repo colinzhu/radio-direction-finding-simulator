@@ -68,8 +68,8 @@ export class UIController {
         // 1. 电源开关 (解锁 Web Audio)
         this.dom.powerBtn.addEventListener('click', () => this.togglePower());
         
-        // 2. 旋钮拖拽处理
-        this.setupKnobDrag(this.dom.volumeContainer, this.dom.volumeKnob, -135, 135, (ratio) => {
+        // 2. 旋钮拖拽处理 (12点方向=0%, 顺时针到11点方向=100%)
+        this.setupKnobDrag(this.dom.volumeContainer, this.dom.volumeKnob, 0, 330, (ratio) => {
             const volPercent = Math.round(ratio * 100);
             this.dom.volumeVal.textContent = `${volPercent}%`;
             this.audio.setVolume(ratio);
@@ -238,9 +238,10 @@ export class UIController {
             
             let angleRad = Math.atan2(dy, dx);
             let angleDeg = angleRad * (180 / Math.PI) + 90;
-            
-            if (angleDeg > 180) angleDeg -= 360;
-            if (angleDeg < -180) angleDeg += 360;
+
+            // 映射到 [0, 360)，0 = 12点钟方向，顺时针递增
+            if (angleDeg < 0) angleDeg += 360;
+            if (angleDeg >= 360) angleDeg -= 360;
             
             if (angleDeg >= minDeg && angleDeg <= maxDeg) {
                 currentRotation = angleDeg;
