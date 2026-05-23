@@ -297,30 +297,30 @@ export class MapRenderer {
         this.ctx.fill();
         
         // 3. 关键科普标识：绘制磁棒天线 (Ferrite Rod Antenna)
-        // 磁棒与身体垂直，即打横放在左右侧 (在画布旋转坐标系中即横向沿 X 轴分布)
+        // 磁棒沿身体前方-后方 Y 轴方向分布
         // 使用暗灰色配铜黄色线圈来示意磁棒天线
         this.ctx.strokeStyle = '#576574'; // 磁棒本身
         this.ctx.lineWidth = 4;
         this.ctx.lineCap = 'square';
         this.ctx.beginPath();
-        this.ctx.moveTo(-16, 0); // 向左伸展
-        this.ctx.lineTo(16, 0);  // 向右伸展
+        this.ctx.moveTo(0, -16); // 向前方伸展
+        this.ctx.lineTo(0, 16);  // 向后方伸展
         this.ctx.stroke();
-        
+
         // 在磁棒两端包覆红色端盖
         this.ctx.fillStyle = '#ff3366';
-        this.ctx.fillRect(-17, -2.5, 2, 5);
-        this.ctx.fillRect(15, -2.5, 2, 5);
-        
+        this.ctx.fillRect(-2.5, -17, 5, 2);
+        this.ctx.fillRect(-2.5, 15, 5, 2);
+
         // 绘制黄色的铜线圈绕组在磁棒中间，生动还原物理细节！
         this.ctx.strokeStyle = '#ff9f00';
         this.ctx.lineWidth = 2.5;
         this.ctx.setLineDash([2, 2]);
         this.ctx.beginPath();
-        this.ctx.moveTo(-10, 0);
-        this.ctx.lineTo(-2, 0);
-        this.ctx.moveTo(2, 0);
-        this.ctx.lineTo(10, 0);
+        this.ctx.moveTo(0, -10);
+        this.ctx.lineTo(0, -2);
+        this.ctx.moveTo(0, 2);
+        this.ctx.lineTo(0, 10);
         this.ctx.stroke();
         
         // 4. 辅助指示线：向身体正前方及正后方延伸的虚线，表示最强灵敏方向
