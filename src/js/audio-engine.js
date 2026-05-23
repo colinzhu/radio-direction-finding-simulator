@@ -265,8 +265,8 @@ export class AudioEngine {
         const dy = foxPos.y - playerPos.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         
-        // 1. 距离衰减
-        const D0 = 60;
+        // 1. 距离衰减 (D0越小衰减越明显)
+        const D0 = 30;
         const distGain = D0 / (D0 + dist);
         
         // 2. 方向图衰减 (8字形，哑点线在身体垂直方向)
