@@ -147,7 +147,7 @@ export class AudioEngine {
         
         // 3. 构建音频链路
         this.masterGain = this.ctx.createGain();
-        this.masterGain.gain.value = this.masterVolume;
+        this.masterGain.gain.value = this.masterVolume * 4;
         this.masterGain.connect(this.ctx.destination);
         
         this.bandpassFilter = this.ctx.createBiquadFilter();
@@ -245,7 +245,7 @@ export class AudioEngine {
     setVolume(value) {
         this.masterVolume = Math.max(0, Math.min(1, value));
         if (this.masterGain) {
-            this.masterGain.gain.setTargetAtTime(this.masterVolume, this.ctx.currentTime, 0.01);
+            this.masterGain.gain.setTargetAtTime(this.masterVolume * 4, this.ctx.currentTime, 0.01);
         }
     }
 
