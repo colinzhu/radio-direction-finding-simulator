@@ -6,13 +6,13 @@
 export class GameEngine {
     constructor() {
         // 地图尺寸
-        this.width = 600;
-        this.height = 600;
+        this.width = 750;
+        this.height = 750;
 
         // 玩家状态
         this.player = {
-            x: 300,
-            y: 500,
+            x: 375,
+            y: 625,
             angle: 0, // 朝向角 (弧度, 0为正北, 顺时针为正值)
             radius: 8,
             speed: 2.2, // 基础移动速度
@@ -37,11 +37,11 @@ export class GameEngine {
 
         // 障碍物定义 (圆形，便于做平滑的滑动碰撞检测)
         this.obstacles = [
-            { name: '中心大池塘', x: 220, y: 260, r: 65, type: 'pond' },
-            { name: '东北密林区', x: 450, y: 180, r: 55, type: 'forest' },
-            { name: '西南小石群', x: 150, y: 440, r: 35, type: 'rock' },
-            { name: '西北古树区', x: 120, y: 100, r: 40, type: 'forest' },
-            { name: '东南休息亭', x: 460, y: 420, r: 30, type: 'structure' }
+            { name: '中心大池塘', x: 275, y: 325, r: 81, type: 'pond' },
+            { name: '东北密林区', x: 563, y: 225, r: 69, type: 'forest' },
+            { name: '西南小石群', x: 188, y: 550, r: 44, type: 'rock' },
+            { name: '西北古树区', x: 150, y: 125, r: 50, type: 'forest' },
+            { name: '东南休息亭', x: 575, y: 525, r: 38, type: 'structure' }
         ];
 
         // 游戏全局状态
@@ -56,8 +56,8 @@ export class GameEngine {
      */
     resetGame(availableStations) {
         // 1. 重置玩家位置到下方安全区
-        this.player.x = 300;
-        this.player.y = 520;
+        this.player.x = 375;
+        this.player.y = 650;
         this.player.angle = 0; // 面向北方
         this.player.distanceWalked = 0;
 
@@ -79,7 +79,7 @@ export class GameEngine {
             attempt++;
             // 边缘留出 50 像素安全距离
             const rx = 50 + Math.random() * (this.width - 100);
-            const ry = 50 + Math.random() * (this.height - 180); // 尽量放偏中上方，避开下方起点
+            const ry = 63 + Math.random() * (this.height - 225); // 尽量放偏中上方，避开下方起点
 
             // 检查是否与玩家起点过近 (至少相距 200 像素)
             const distToStart = Math.sqrt(Math.pow(rx - this.player.x, 2) + Math.pow(ry - this.player.y, 2));
@@ -104,8 +104,8 @@ export class GameEngine {
 
         // 如果极罕见情况下找不到位置，给个保底坐标
         if (!validPos) {
-            this.fox.x = 300;
-            this.fox.y = 150;
+            this.fox.x = 375;
+            this.fox.y = 188;
         }
 
         this.isVictory = false;

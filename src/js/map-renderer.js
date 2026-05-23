@@ -83,19 +83,19 @@ export class MapRenderer {
         
         // 绘制主干道
         this.ctx.beginPath();
-        this.ctx.moveTo(50, 500);
-        this.ctx.quadraticCurveTo(300, 480, 300, 300);
-        this.ctx.quadraticCurveTo(300, 120, 550, 100);
+        this.ctx.moveTo(63, 625);
+        this.ctx.quadraticCurveTo(375, 600, 375, 375);
+        this.ctx.quadraticCurveTo(375, 150, 688, 125);
         this.ctx.stroke();
-        
+
         // 支路
         this.ctx.lineWidth = 14;
         this.ctx.strokeStyle = '#18201d';
         this.ctx.beginPath();
-        this.ctx.moveTo(300, 380);
-        this.ctx.quadraticCurveTo(100, 350, 80, 200);
-        this.ctx.moveTo(300, 250);
-        this.ctx.quadraticCurveTo(500, 280, 520, 400);
+        this.ctx.moveTo(375, 475);
+        this.ctx.quadraticCurveTo(125, 438, 100, 250);
+        this.ctx.moveTo(375, 313);
+        this.ctx.quadraticCurveTo(625, 350, 650, 500);
         this.ctx.stroke();
     }
 
