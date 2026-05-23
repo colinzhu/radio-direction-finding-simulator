@@ -282,9 +282,10 @@ export class UIController {
         this.dom.foxIdDisplay.textContent = '--';
         this.dom.morseCodeDisplay.textContent = '--';
         
-        // 如果电源已打开，需要同步更新播放状态
+        // 如果电源已打开，需要重建音频图以重置声音
         if (this.dom.powerBtn.classList.contains('on')) {
-            this.audio.playActiveStation();
+            this.audio.stop();
+            this.audio.start();
         }
     }
 
