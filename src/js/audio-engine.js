@@ -75,6 +75,9 @@ export class AudioEngine {
         
         // 实时状态输出
         this.latestSignalStrength = 0;
+
+        // 地图对角线长度 (750x750)
+        this.mapDiagonal = Math.sqrt(750 * 750 + 750 * 750);
     }
 
     /**
@@ -279,8 +282,8 @@ export class AudioEngine {
         // 控制信号音量
         this.signalGain.gain.setTargetAtTime(finalSignalGain * 0.85, this.ctx.currentTime, 0.02);
         
-        // 自动增益控制 (AGC)
-        const noiseLevel = 0.08 * (1.0 - 0.7 * distGain);
+        // 噪音与距离成正比：越远噪音越大
+        const noiseLevel = 0.015 + (dist / this.mapDiagonal) * 0.10;
         this.noiseGain.gain.setTargetAtTime(noiseLevel, this.ctx.currentTime, 0.05);
         
         // 信号强度分度 (0 - 100)
